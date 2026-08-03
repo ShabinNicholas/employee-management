@@ -19,5 +19,38 @@ public class EmployeeService {
         employees.add(employee);
         return employee;
     }
-}
 
+    public Employee updateEmployee(Long id, Employee updatedEmployee) {
+        for (Employee employee : employees) {
+            if (employee.getId().equals(id)) {
+                employee.setName(updatedEmployee.getName());
+                employee.setEmail(updatedEmployee.getEmail());
+                employee.setSalary(updatedEmployee.getSalary());
+                employee.setDepartment(updatedEmployee.getDepartment());
+
+                return employee;
+            }
+        }
+        return null;
+    }
+
+    public Employee getEmployeeById(Long id) {
+        for (Employee employee : employees) {
+            if (employee.getId().equals(id)) {
+                return employee;
+            }
+        }
+        return null;
+    }
+
+    public boolean deleteEmployee(Long id) {
+        for (Employee employee : employees) {
+            if (employee.getId().equals(id)) {
+                employees.remove(employee);
+
+                return true;
+            }
+        }
+        return false;
+    }
+}
