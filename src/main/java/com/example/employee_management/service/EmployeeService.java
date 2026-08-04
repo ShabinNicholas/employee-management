@@ -5,33 +5,39 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.example.employee_management.exception.EmployeeNotFoundException;
 import com.example.employee_management.model.Employee;
+import com.example.employee_management.repository.EmployeeRepository;
 
 @Service
 public class EmployeeService {
-    private final List<Employee> employees = new ArrayList<>();
+    private final EmployeeRepository employeeRepository;
+
+    public EmployeeService(EmployeeRepository employeeRepository) {
+        this.employeeRepository = employeeRepository;
+    }
 
     public List<Employee> getAllEmployees() {
-        return employees;
+        return employeeRepository.findAll();
     }
 
     public Employee createEmployee(Employee employee) {
-        employees.add(employee);
+        employeeRepository.save(employee);
         return employee;
     }
 
     public Employee updateEmployee(Long id, Employee updatedEmployee) {
-        for (Employee employee : employees) {
-            if (employee.getId().equals(id)) {
-                employee.setName(updatedEmployee.getName());
-                employee.setEmail(updatedEmployee.getEmail());
-                employee.setSalary(updatedEmployee.getSalary());
-                employee.setDepartment(updatedEmployee.getDepartment());
 
-                return employee;
-            }
-        }
-        return null;
+        Employee employee = employeeRepository.findById(id)
+                .orElseThrow(() -> new EmployeeNotFoundException("Employee with id: " + id + " not found"));
+
+        employee.setName(updatedEmployee.getName());
+        employee.setEmail(updatedEmployee.getEmail());
+        employee.setSalary(updatedEmployee.getSalary());
+        employee.setDepartment(updatedEmployee.getDepartment());
+
+        return employeeRepository.save(employee);
+
     }
 
     public Employee getEmployeeById(Long id) {
@@ -40,7 +46,7 @@ public class EmployeeService {
                 return employee;
             }
         }
-        return null;
+        throw new EmployeeNotFoundException("Employee not found with: " + id);
     }
 
     public boolean deleteEmployee(Long id) {
@@ -51,6 +57,6 @@ public class EmployeeService {
                 return true;
             }
         }
-        return false;
+        throw new EmployeeNotFoundException("Employee with id: " + id + "not found");
     }
 }
